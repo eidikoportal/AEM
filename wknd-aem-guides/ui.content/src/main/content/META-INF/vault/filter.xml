@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<workspaceFilter version="1.0">
-    <filter root="/conf/wknd site" mode="merge"/>
-    <filter root="/content/wknd site" mode="merge"/>
-    <filter root="/content/dam/wknd site/asset.jpg" mode="merge"/>
-    <filter root="/content/experience-fragments/wknd site" mode="merge"/>
-</workspaceFilter>
