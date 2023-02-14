@@ -1,0 +1,10 @@
+<div data-sly-use.placeholderTemplate="core/wcm/components/commons/v1/templates.html"
+data-sly-use.model="com.adobe.aem.my.wknd.site.core.models.ImageText"
+data-sly-test.hasContent="${!model.empty}">   
+    <h2 class="cmp-imagetext__title">${model.title}</h2>
+    <div class="${model.imagePosition == 'top-left' ? 'cmp-imagetext__image-cmp-image__left' : 'cmp-imagetext__image-cmp-image__right'}"
+     data-sly-resource="${ '.' @ resourceType = 'core/wcm/components/image/v2/image' }"></div>
+    <p class="${model.imagePosition == 'top-left' ? 'cmp-imagetext__title-cmp-imagetext__title_right' : 'cmp-imagetext__image-cmp-cmp-imagetext__title_left'}">
+    ${model.text @context='html'}</p>   
+</div>
+<sly data-sly-call="${placeholderTemplate.placeholder @ isEmpty=true}"></sly>
