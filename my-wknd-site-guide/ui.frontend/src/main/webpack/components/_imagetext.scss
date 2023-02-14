@@ -1,0 +1,22 @@
+.cmp-imagetext__image {
+
+    &-cmp-image__right {
+      width: 50%;
+      float: right;
+    }
+  
+    &-cmp-image__left {
+      width: 50%;
+      float: left;
+    }
+  }
+  .cmp-imagetext__title {
+  
+    &-cmp-imagetext__title_right {
+      float: right;
+    }
+  
+    &-cmp-imagetext__title_left {
+      float: left;
+    }
+  }
