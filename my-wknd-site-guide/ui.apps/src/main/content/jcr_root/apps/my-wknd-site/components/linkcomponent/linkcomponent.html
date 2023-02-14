@@ -1,0 +1,14 @@
+<div 
+data-sly-use.placeholderTemplate="core/wcm/components/commons/v1/templates.html"
+data-sly-use.model="com.adobe.aem.my.wknd.site.core.models.LinkSections"
+data-sly-test.hasValid="${model.validSection}"
+class="cmp-title">
+<ul data-sly-list.sections="${model.sections}">
+        <li>${sections.section}</li>
+        <ul data-sly-test.hasValidLink="${sections.validLink}" data-sly-list.lin="${sections.linksmultifield}">
+                <li data-sly-test.internal="${lin.link == 'internal'}"><a  href="${lin.internal}">${lin.internalLabel}</a></li>
+                <li data-sly-test.internalActive="${!internal}"><a  href="${lin.external @context='html'}" target="_blank">${lin.externalLabel}</a></li>
+        </ul>
+</ul>
+</div>
+<sly data-sly-call="${placeholderTemplate.placeholder @ isEmpty=!hasValid, classAppend='cmp-title'}"></sly>
