@@ -40,7 +40,7 @@ public class ImageTextImpl implements ImageText{
 
     @Override
     public String getTitle() {
-        // TODO Auto-generated method stub
+        
         return title;
     }
 

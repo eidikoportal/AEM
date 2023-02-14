@@ -1,0 +1,10 @@
+<div data-sly-use.placeholderTemplate="core/wcm/components/commons/v1/templates.html"
+data-sly-use.model="com.adobe.aem.my.wknd.site.core.models.DialogValidation"
+data-sly-test.hasContent="${!model.empty}"
+class="cmp-title">
+<h1>${model.title}</h1>  
+<p>${model.textArea}</p>
+<a data-sly-test.internal="${model.link == 'internal'}" href="${model.internal}">${model.internalLabel}</a>
+<a data-sly-test.external="${model.link == 'external'}" href="${model.external @context='html'}" target="_blank">${model.externalLabel}</a>
+</div>
+<sly data-sly-call="${placeholderTemplate.placeholder @ isEmpty=!hasContent, classAppend='cmp-title'}"></sly>
