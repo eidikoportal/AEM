@@ -1,0 +1,9 @@
+<h1>OSGI Factory Config Demo</h1>
+<div data-sly-use.wkndOsgiConfig="com.adobe.aem.my.wknd.site.core.models.WkndOsgiConfig"></div>
+<div data-sly-list="${wkndOsgiConfig.allOsgiConfigs}">
+    <div>${itemList.count}</div>
+    ............................
+    <div><p>Config Id : ${item.configId}<p></div>
+    <div><p>Service Name : ${item.serviceName}</div>
+    <div><p>Serive Url : ${item.serviceUrl}<p></div>
+</div>
