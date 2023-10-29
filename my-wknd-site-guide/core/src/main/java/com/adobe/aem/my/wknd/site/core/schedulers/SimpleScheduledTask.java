@@ -15,43 +15,33 @@
  */
 package com.adobe.aem.my.wknd.site.core.schedulers;
 
+import org.apache.sling.commons.scheduler.ScheduleOptions;
+import org.apache.sling.commons.scheduler.Scheduler;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.metatype.annotations.AttributeDefinition;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
-import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 /**
  * A simple demo for cron-job like tasks that get executed regularly.
  * It also demonstrates how property values can be set. Users can
  * set the property values in /system/console/configMgr
  */
-@Designate(ocd=SimpleScheduledTask.Config.class)
-@Component(service=Runnable.class)
+@Designate(ocd=SchedulerConfig.class)
+@Component(service=Runnable.class,immediate = true)
 public class SimpleScheduledTask implements Runnable {
 
-    @ObjectClassDefinition(name="A scheduled task",
-                           description = "Simple demo for cron-job like task with properties")
-    public static @interface Config {
-
-        @AttributeDefinition(name = "Cron-job expression")
-    
-        String scheduler_expression() default "*/30 * * * * ?";
-
-        @AttributeDefinition(name = "Concurrent task",
-                             description = "Whether or not to schedule this task concurrently")
-        boolean scheduler_concurrent() default false;
-
-        @AttributeDefinition(name = "A parameter",
-                             description = "Can be configured in /system/console/configMgr")
-        String myParameter() default "";
-    }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private String myParameter;
+    
+    @Reference 
+    Scheduler scheduler;
+  
+    private int schedulerId;
     
     @Override
     public void run() {
@@ -59,8 +49,27 @@ public class SimpleScheduledTask implements Runnable {
     }
 
     @Activate
-    protected void activate(final Config config) {
+    protected void activate(final SchedulerConfig config) {
         myParameter = config.myParameter();
+        schedulerId = config.scheduler_name().hashCode();
+        addScheduler(config);
+    }
+
+    @Deactivate
+    protected void deactivate(){
+        removeScheduler();
+    }
+    private void addScheduler(SchedulerConfig config){
+            ScheduleOptions scheduleOptions = scheduler.EXPR(config.scheduler_expression());
+            scheduleOptions.name(String.valueOf(schedulerId));
+            scheduleOptions.canRunConcurrently(false);
+            scheduler.schedule(config, scheduleOptions);
+            logger.info("####Scheduler add####");
+            ScheduleOptions scheduleOptionsNow = scheduler.NOW();
+            scheduler.schedule(config, scheduleOptionsNow);
+    }
+    private void removeScheduler(){
+        scheduler.unschedule(String.valueOf(schedulerId));
     }
 
 }
