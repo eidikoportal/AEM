@@ -1,0 +1,69 @@
+1.To check list of run modes go to http://localhost:4502/system/console/status-slingsettings
+
+Different ways to get ResourceResolver in aem
+................................................
+Adapt from SlingHttpServletRequest:
+You can adapt a SlingHttpServletRequest to obtain a ResourceResolver. 
+This is often used in request-based contexts,
+such as servlets and request filters
+SlingHttpServletRequest request = ...; // Obtain the request object
+ResourceResolver resourceResolver = request.getResourceResolver();
+
+Adapt from Resource:
+If you have a specific resource, you can adapt it to a ResourceResolver. 
+This is useful when you're working with a specific resource and want to perform operations on it.
+Resource resource = ...; // Obtain the resource object
+ResourceResolver resourceResolver = resource.getResourceResolver();
+
+Service User:
+You can obtain a ResourceResolver using a service user. 
+Service users are typically used for long-running background processes and automation.
+
+ResourceResolverFactory resourceResolverFactory = ...; // Injected OSGi service
+Map<String, Object> serviceUserProps = new HashMap<>();
+serviceUserProps.put(ResourceResolverFactory.SUBSERVICE, "service-user-name");
+ResourceResolver serviceResourceResolver = resourceResolverFactory.getServiceResourceResolver(serviceUserProps);
+
+Administrative ResourceResolver:
+Be cautious when using an administrative ResourceResolver, as it has broad access to the repository. 
+It's typically used for administrative scripts and is not recommended for regular application code.
+
+ResourceResolverFactory resourceResolverFactory = ...; // Injected OSGi service
+ResourceResolver adminResourceResolver = resourceResolverFactory.getAdministrativeResourceResolver(null);
+
+Scripting and JSPs:
+In JSPs and other scripting languages (e.g., HTL/Sightly), 
+you can access a ResourceResolver using the resourceResolver object available by default.
+
+<%
+ResourceResolver resourceResolver = resourceResolverFactory.getResourceResolver(session);
+%>
+
+
+ResourceResolverFactory from OSGi Service:
+You can obtain a ResourceResolverFactory from the OSGi service registry and 
+then create a ResourceResolver from it.
+
+ResourceResolverFactory resourceResolverFactory = ...; // Injected OSGi service
+ResourceResolver resourceResolver = resourceResolverFactory.getResourceResolver(null);
+
+
+Custom AuthenticationInfo:
+You can create a custom AuthenticationInfo object and pass it to ResourceResolverFactory 
+to obtain a ResourceResolver with specific authentication details.
+
+AuthenticationInfo authInfo = new SimpleCredentials("username", "password".toCharArray());
+ResourceResolverFactory resourceResolverFactory = ...; // Injected OSGi service
+ResourceResolver resourceResolver = resourceResolverFactory.getResourceResolver(authInfo);
+
+
+clientlib example
+...............................................................
+As an example:
+
+You have a clientlib in /apps/myproject/clientlibs/foo
+You have a static image in /apps/myprojects/clientlibs/foo/resources/icon.png
+Then you set the allowProxy property on foo to true.
+
+You can then request /etc.clientlibs/myprojects/clientlibs/foo.js
+You can then reference the image via /etc.clientlibs/myprojects/clientlibs/foo/resources/icon.png
