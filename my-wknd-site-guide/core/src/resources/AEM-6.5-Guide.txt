@@ -67,3 +67,45 @@ Then you set the allowProxy property on foo to true.
 
 You can then request /etc.clientlibs/myprojects/clientlibs/foo.js
 You can then reference the image via /etc.clientlibs/myprojects/clientlibs/foo/resources/icon.png
+
+When to use cq:EditConfig
+Personally, I end up using cq:EditConfigs on many of the components I write. 
+They are especially useful on components which:
+
+1.May not display content - After all how can you hover over something you can’t see
+2.Do not need to be edited by authors
+3.Should not be moved, deleted or copied
+4.Need advanced functionality
+
+Dialog Replacement with cq:EditConfig
+.....................................
+One of the nice features about the cq:EditConfig is you can use 
+it to get components to show up in the sidekick which do not have a dialog. 
+This is something that I see every so often, 
+usually with the developer instead creating an empty dialog. 
+To get around this, simply create a cq:EditConfig where the cq:actions has every action except edit.
+
+Listeners
+Another common thing to do with an edit config is add a listener to refresh
+ the page when a component is edited. 
+ This is useful when a component requires JavaScript to run correctly. 
+ To add a listener, add a child node called cq:listeners with the primary type cq:EditListenersConfig as shown below:
+
+<jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+	cq:actions="[text:My Component,-,edit,delete,insert,copymove]"
+	cq:dialogMode="floating"
+	cq:layout="editbar"
+	jcr:primaryType="cq:EditConfig">
+	<cq:listeners
+		jcr:primaryType="cq:EditListenersConfig"
+		afteredit="REFRESH_PAGE"/>
+</jcr:root>
+
+
+How password are saved
+..........................
+http://localhost:4502/system/console/crypto
+
+AEM SPA GIT Smaple
+.........................
+https://github.com/anandkilli/aem-spa-react
