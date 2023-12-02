@@ -6,6 +6,8 @@ import com.adobe.granite.ui.components.ds.DataSource;
 import com.adobe.granite.ui.components.ds.SimpleDataSource;
 import com.adobe.granite.ui.components.ds.ValueMapResource;
 import com.day.crx.JcrConstants;
+
+import org.apache.http.protocol.HTTP;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
 import org.apache.sling.api.resource.Resource;
@@ -16,6 +18,7 @@ import org.apache.sling.api.servlets.HttpConstants;
 import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
 import org.apache.sling.api.wrappers.ValueMapDecorator;
 import org.apache.sling.servlets.annotations.SlingServletPaths;
+import org.apache.sling.servlets.annotations.SlingServletResourceTypes;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.osgi.framework.Constants;
@@ -37,7 +40,8 @@ import java.util.*;
  * @author Shiv
  */
 @Component(service = Servlet.class)
-@SlingServletPaths(value = "/bin/jsonDataDropdown")
+@SlingServletResourceTypes(resourceTypes = { "/apps/jsonDropDown" },
+    methods = HttpConstants.METHOD_GET)
 public class JsonDataDropdownServlet extends SlingSafeMethodsServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonDataDropdownServlet.class);
@@ -80,6 +84,7 @@ public class JsonDataDropdownServlet extends SlingSafeMethodsServlet {
             }
 
             JSONObject jsonObject = new JSONObject(stringBuilder.toString());
+            @SuppressWarnings("unchecked")
             Iterator<String> jsonKeys = jsonObject.keys();
             LOGGER.info("Json Data loaded successfully"+jsonObject.toString());
             //Iterating JSON Objects over key
