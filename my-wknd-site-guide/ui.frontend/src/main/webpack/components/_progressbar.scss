@@ -1,4 +1,18 @@
-.cmp-progressbar {}
-.cmp-progressbar__label--completed {}
-.cmp-progressbar__label--remaining {}
-.cmp-progressbar__bar {}
+.cmp-progressbar {
+    width: 100%; 
+    background-color: #ddd; 
+}
+.cmp-progressbar__label--completed {
+    display: none;
+}
+.cmp-progressbar__label--remaining {
+    display: none;
+}
+.cmp-progressbar__bar {
+    width: 1%; 
+  height: 35px; 
+  background-color: #4CAF50; 
+  text-align: center; 
+  line-height: 32px; 
+  color: black; 
+}
