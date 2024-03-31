@@ -1,0 +1,641 @@
+Find Number of Pages, Page Title , Page Names in a Site hierarchy
+..................................................................
+import javax.jcr.Node
+ 
+/*Flag to count the number of pages*/
+noOfPages = 0
+/*Pathfield which needs to be iterated for an operation*/
+path='/content/my-wknd-site/us/'
+findAllPages()
+ 
+/*This method is used to Iterate all the pages under a hierarchy
+ *and get their page title ,path and the overall number of
+ *pages.*/
+ 
+def findAllPages(){
+  getPage(path).recurse
+      { page ->
+        println 'Title:'+page.title
+        println 'Path:'+page.path
+        noOfPages ++
+      }
+}
+
+Find all the pages wherein a particular component is being used.
+.................................................................
+/*This method is used to Query the JCR and find results as per the Query.*/
+  def buildQuery(page, term) {
+        def queryManager = session.workspace.queryManager;
+       def statement = 'select * from nt:base where jcr:path like \''+page.path+'/%\' and sling:resourceType = \'' + term + '\'';
+        queryManager.createQuery(statement, 'sql');
+    }
+ 
+    /*Defined Content Hierarchy */
+   final def page = getPage('/content/my-wknd-site/us/')
+   /*Component ResourceType which is searched in the content hierarchy */
+   final def query = buildQuery(page, '/apps/my-wknd-site/components/image');
+   final def result = query.execute()
+ 
+   count = 0;
+   result.nodes.each { node ->
+   String nodePath = node.path;
+   println nodePath
+ }
+   println 'No Of Pages found :' + result.nodes.size();
+/** @author Hashim Khan */
+
+Find all the pages of a particular Template .
+....................................................
+import javax.jcr.Node
+ 
+/*Flag to count the number of pages*/
+noOfPages = 0
+/*Pathfield which needs to be iterated for an operation*/
+path='/content/my-wknd-site/us/en/'
+findAllPagesWidTemplate()
+ 
+/*This method is used to Iterate all the pages under a hierarchy
+ *and find pages with a specific template
+ */
+ 
+def findAllPagesWidTemplate(){
+ getPage(path).recurse
+ { page ->
+      def content = page.node
+      def property= content.get('sling:resourceType')
+      if(property=="my-wknd-site/components/page"){
+         noOfPages ++
+         println 'Page Path:'+content.path
+      }
+ }
+}
+println 'No Of Pages::'+noOfPages
+
+using SQL2 Query
+..................................................................
+/*This method is used to Query the JCR and find results as per the Query.*/
+  def buildQuery(page, term) {
+        def queryManager = session.workspace.queryManager;
+        def statement = 'select * from nt:base where jcr:path like \''+page.path+'/%\' and sling:resourceType = \'' + term + '\'';
+/*Here term is the sling:resourceType property value*/
+        queryManager.createQuery(statement, 'sql');
+    }
+ 
+    /*Defined Content Hierarchy */
+   final def page = getPage('/content/geometrixx/en/')
+   /*Template which is searched in the content hierarchy */
+   final def query = buildQuery(page, 'geometrixx/components/contentpage');
+   final def result = query.execute()
+ 
+   println 'No Of pages found = ' + result.nodes.size();
+ 
+   result.nodes.each { node ->
+        println 'nodePath::'+node.path
+   }
+
+using XPATH
+...............................
+/*This method is used to Query the JCR and find results as per the Query.*/
+ def buildQuery(page, term) {
+ def queryManager = session.workspace.queryManager;
+ def statement = "/jcr:root${page.path}//element(*, cq:Page)[jcr:content/@cq:template = '"+term+"']"
+ /*Here term is the cq:template value*/
+ def query = queryManager.createQuery(statement, 'xpath')
+ }
+ 
+ /*Defined Content Hierarchy */
+ final def page = getPage('/content/geometrixx/en/')
+ /*Component ResourceType which is searched in the content hierarchy */
+ final def query = buildQuery(page, '/apps/geometrixx/templates/contentpage');
+ final def result = query.execute()
+ 
+ count = 0;
+ result.nodes.each { node ->
+ String nodePath = node.path;
+ println nodePath
+ }
+ println 'No Of component found :' + result.nodes.size();
+ result.nodes.each { node ->
+ println 'nodePath::'+node.path
+ }
+..................................................................
+ Delete all the nodes of a particular type with a specific property.
+Deletion of a particular node is quite handy when you have to similar use case and want to modify the content quickly and easily.
+
+/** @author Hashim Khan */
+ 
+/*This method is used to Query the JCR and find results as per the Query.*/
+ def buildQuery(page, term) {
+ def queryManager = session.workspace.queryManager;
+ def statement = 'select * from nt:base where jcr:path like \''+page.path+'/%\' and sling:resourceType = \'' + term + '\'';
+ queryManager.createQuery(statement, 'sql');
+ }
+ 
+ /*Defined Content Hierarchy */
+ final def page = getPage('/content/geometrixx/en/')
+ /*Component ResourceType which is searched in the content hierarchy */
+ final def query = buildQuery(page, 'foundation/components/flash');
+ final def result = query.execute()
+ 
+ count = 0;
+ result.nodes.each { node ->
+ String nodePath = node.path;
+ 
+ if(nodePath.contains('flash') && !nodePath.contains('jcr:versionStorage') ){
+ count ++;
+ println 'deleting--'+nodePath ;
+ node.remove();
+ /* Save this session if you are sure the correct nodes are being deleted. Once the session is saved the nodes couldn't be retrieved back.
+ *session.save();*/
+ }
+ }
+ println 'No Of component found :' + result.nodes.size();
+ println 'Number of Component Deleted: ' + count;
+
+ ...................................................
+Modify a property in a complete site hierarchy as per business logic. 
+There was a real time problem in one of my project where we have to fill in jcr:title in the Page-title whenever the Page title was a null. Moreover we were having multiple languages sites and have to browse through all of them at once. We used groovy to solve this problem for multiple development environments. Similar to the below example where I am modifying a particular node and its property for the complete hierarchy using Groovy. I have used example for a Geometrixx site (AEM 6.0) so that you can may the results for yourself.
+
+/** @author Hashim Khan */
+ 
+/*This method is used to Query the JCR and find results as per the Query.*/
+ def buildQuery(page, term) {
+ def queryManager = session.workspace.queryManager;
+ def statement = 'select * from nt:base where jcr:path like \''+page.path+'/%\' and sling:resourceType = \'' + term + '\'';
+ queryManager.createQuery(statement, 'sql');
+ }
+ 
+ /*Defined Content Hierarchy */
+ final def page = getPage('/content/geometrixx/en/')
+ /*Component ResourceType which is searched in the content hierarchy */
+ final def query = buildQuery(page, 'collab/calendar/components/event');
+ final def result = query.execute()
+ 
+ count = 0;
+ result.nodes.each { node ->
+ String nodePath = node.path;
+ 
+ if(nodePath.contains('event') && !nodePath.contains('jcr:versionStorage') ){
+ /*The below iterator is used to fetch the child pages of the parent node */
+ node.findAll { it.hasNodes() }.each {
+ if(it.name.contains("event")){
+ count ++;
+ println 'Title--'+it.get('jcr:title') ;
+ println 'Node Path--'+it.path ;
+ it.set('jcr:title','Hashim');
+ println 'Title--'+it.get('jcr:title') ;
+ session.save()
+ }
+ }
+ }
+ }
+ println 'Number Of Component Found :' + result.nodes.size();
+ println 'Number of Component Modified:' + count;
+
+ ...........................................................
+Count Number of Nodes which have more than 1000+ child nodes.
+This a common use case wherein you are asked to check whether a particular hierarchy has nodes which has more than 1000 child nodes . You can change the Search Path as per you convenience and list down the nodes under that hierarchy.
+
+/** @author Hashim Khan */
+ 
+import javax.jcr.NodeIterator
+ 
+def path="/etc/tags"
+def variable = 1000
+ 
+println 'Node,COUNT'
+getNode(path).recurse { node >
+ NodeIterator it = node.getNodes()
+ def count =0
+ while(it.hasNext()){
+ def nodetemp = it.nextNode()
+ count++
+ }
+ 
+ if(count>=variable)
+ println node.path + ','+count
+}
+...............................................................
+Delete all the Unused Tags in an application. 
+In this script the unused tags are counted in an application and deleted with a delay . If the tag count is much more it is advisable to run this script in a more specified path.  You have to run this script a few times as it doesn’t delete the tags which has any child nodes.
+
+/** @author Hashim Khan */
+ 
+ import org.apache.sling.api.resource.Resource
+ import com.day.cq.tagging.Tag
+ import com.day.cq.tagging.TagManager
+ import org.apache.sling.api.resource.ResourceResolver
+ import java.lang.Thread.*;
+ import javax.jcr.Node;
+ 
+def tagpath = "/etc/tags";
+def delay = 10 ; //in Milliseconds.
+ 
+def query = getAllTags(tagpath)
+def result = query.execute()
+ 
+def rows = result.rows
+def unusedTags = 0
+ 
+rows.each { row >
+ Resource res = resourceResolver.getResource(row.path)
+ if(res!=null){
+ Tag tag = res.adaptTo(com.day.cq.tagging.Tag)
+ Node tempNode = res.adaptTo(javax.jcr.Node);
+ 
+ if(tag.getCount()==0){
+ if(!tempNode.hasNodes()){
+ unusedTags++
+ println "Deleted Tag : " + tag.getPath()
+ tempNode.remove()
+ }
+ }
+ Thread.currentThread().sleep((long)(delay));
+ }
+ 
+}
+println "Total Unused Tags :"+unusedTags
+//session.save() //Uncomment this to make it working.
+ 
+def getAllTags(tagpath) {
+ def queryManager = session.workspace.queryManager
+ def statement = "/jcr:root"+tagpath+"//element(*, cq:Tag)"
+ def query = queryManager.createQuery(statement, "xpath")
+}
+.........................................................................................
+Merge Duplicate Tags in an Application
+This was a requirement in one of my client who asked us to merge the Duplicate Tags .  This way you can list out all the duplicate tags and merge all of them into the first Master Tag. All the related references in the Pages will automatically be changed as per the API.
+
+/** @author Hashim Khan */
+ 
+ import org.apache.sling.api.resource.Resource
+ import com.day.cq.tagging.Tag
+ import org.apache.sling.api.resource.ResourceResolver
+ import com.day.cq.tagging.TagManager
+ import javax.jcr.Node;
+ import java.lang.Thread.*; 
+ 
+ def tagLocation = "/etc/tags"
+ def delay = 10 ; //in Milliseconds.
+ 
+ def buildQuery(tagLocation) {
+ def queryManager = session.workspace.queryManager;
+ def statement = "/jcr:root"+tagLocation+ "//element(*, cq:Tag)"
+ def query = queryManager.createQuery(statement, 'xpath')
+ }
+ 
+ def findDuplicateTags(tagLocation,tagNodeName) {
+ def queryManager = session.workspace.queryManager;
+ def statement = "/jcr:root"+tagLocation+ "//element(*, cq:Tag) [fn:name() = '" + tagNodeName + "' ]"
+ def query = queryManager.createQuery(statement, 'xpath')
+ }
+ 
+ final def query = buildQuery(tagLocation);
+ final def result = query.execute()
+ 
+ def tagList = []
+ 
+ result.nodes.each {node->
+ String nodeTitle = node.name;
+ tagList.add(nodeTitle);
+ }
+ def duplicates = tagList.findAll {tagList.count(it) > 1}
+ def uniqueUsers = duplicates.unique(mutate = false)
+ def count = 0;
+ TagManager tm = resourceResolver.adaptTo(com.day.cq.tagging.TagManager);
+ def mergecount = 0;
+ 
+ uniqueUsers.each {
+ def tagquery = findDuplicateTags(tagLocation,it);
+ def pathresult = tagquery.execute()
+ Tag tag , masterTag =null;
+ 
+ count = 0;
+ pathresult.nodes.each {node->
+ Resource r = resourceResolver.getResource(node.path)
+ tag = r.adaptTo(com.day.cq.tagging.Tag)
+ Node tempNode = r.adaptTo(javax.jcr.Node);
+ if(count == 0 ){
+ masterTag = tag ;
+ }else if(tm!=null && !(tag.getPath()==masterTag.getPath())){
+ if(!tempNode.hasNodes()){
+ println 'Merging Tag :: ' + tag.getPath() +' into>> '+ masterTag.getPath()
+ mergecount++
+ tm.mergeTag(tag,masterTag)
+ }
+ }
+ count++
+ Thread.currentThread().sleep((long)(delay));
+ }
+ 
+ }
+println 'Merged tags count ::'+ mergecount
+..............................................................................
+Create a CSV File for Duplicate Tags List in the Application.
+This script can be used to generate a CSV output and store into filesystem . It lists down all the tags which are Duplicate and all the pages where they are being used. It will help to analyse the System Taxonomy.
+
+/** @author Hashim Khan */
+ 
+import org.apache.sling.api.resource.Resource
+import com.day.cq.tagging.Tag
+import org.apache.sling.api.resource.ResourceResolver
+ 
+def filePath = "/opt/adobe/output.csv"
+def tagLocation = "/etc/tags/geometrixx-media"
+ 
+def buildQuery(tagLocation) {
+def queryManager = session.workspace.queryManager;
+def statement = "/jcr:root"+tagLocation+ "//element(*, cq:Tag)"
+def query = queryManager.createQuery(statement, 'xpath')
+}
+ 
+def findDuplicateTags(tagLocation,tagNodeName) {
+def queryManager = session.workspace.queryManager;
+def statement = "/jcr:root"+tagLocation+ "//element(*, cq:Tag) [fn:name() = '" + tagNodeName + "' ]"
+def query = queryManager.createQuery(statement, 'xpath')
+}
+ 
+def findPagesWithTag(tagId, tagPath) {
+def queryManager = session.workspace.queryManager;
+def statement = "//element(*, cq:Page)[(jcr:content/@cq:tags = '" + tagId + "' or jcr:content/@cq:tags = '" + tagPath + "' )]"
+def query = queryManager.createQuery(statement, 'xpath')
+}
+ 
+final def query = buildQuery(tagLocation);
+final def result = query.execute()
+ 
+def tagList = []
+ 
+f = new File(filePath)
+ 
+result.nodes.each {node->
+String nodeTitle = node.name;
+tagList.add(nodeTitle);
+}
+ 
+def duplicates = tagList.findAll {tagList.count(it) > 1}
+def uniqueUsers = duplicates.unique(mutate = false)
+ 
+print 'TAGTITLE ,TAGID , Pages , Count'+'\n'
+f.append('TAGTITLE ,TAGID , Pages , Count'+'\n')
+uniqueUsers.each {
+def tagquery = findDuplicateTags(tagLocation,it);
+def pathresult = tagquery.execute()
+pathresult.nodes.each {node->
+Resource r = resourceResolver.getResource(node.path)
+Tag t1 = r.adaptTo(com.day.cq.tagging.Tag)
+print t1.getTitle()+','
+f.append(t1.getTitle()+',')
+def pagequery = findPagesWithTag(t1.getTagID(), node.path);
+def pageresult = pagequery.execute()
+print t1.getTagID()+','
+f.append(t1.getTagID()+',')
+count = 0;
+def totalResults = pageresult.getTotalSize()
+pageresult.nodes.each { pagenode->
+if(count>0){
+print ','
+f.append(',')
+}
+print pagenode.path+','
+f.append(pagenode.path+',')
+ 
+if(count==0){
+print t1.getCount()+','
+f.append(t1.getCount())+','
+}
+count++;
+ 
+if (totalResults != count ){
+print '\n'
+f.append('\n')
+}
+print ','
+f.append (',')
+}
+print '\n'
+f.append ('\n')
+}
+print '\n'
+f.append ('\n')
+}
+Fill all the Unused Assets in AEM Content
+/*
+........................................................................................
+Find all the Assets which are not referenced in the content and could be removed.
+@author Hashim Khan */
+ 
+def predicates = [path: "/content/dam/geometrixx", type: "dam:Asset",  "orderby.index": "true", "orderby.sort": "desc"]
+def query = createQuery(predicates)
+query.hitsPerPage = 500
+def result = query.result
+println "${result.totalMatches} hits, execution time = ${result.executionTime}s\n--"
+ 
+result.hits.each { hit ->
+    def path=hit.node.path
+    Resource res = resourceResolver.getResource(path)
+    if(res!=null){
+        getAllReferences(path);
+    }
+}
+ 
+def getAllReferences(assetpath) {
+    def queryManager = session.workspace.queryManager
+    def statement = "/jcr:root" + "/content/geometrixx//*" + "[jcr:contains(., '"+assetpath+"')]"
+    def query = queryManager.createQuery(statement, "xpath")
+    def result = query.execute()
+    def rows = result.getRows().size
+    if(rows==0){
+        println "Unused Asset: "+assetpath
+    }
+ 
+}
+Fill all the Unused Components in AEM Content
+.......................................................................
+/*
+Find all the Components which are not used in the content and could be removed.
+@author Hashim Khan */
+ 
+def predicates = [path: "/apps/geometrixx/components", type: "cq:Component",  "orderby.index": "true", "orderby.sort": "desc"]
+def query = createQuery(predicates)
+query.hitsPerPage = 1000
+def result = query.result
+println "${result.totalMatches} hits, execution time = ${result.executionTime}s\n--"
+ 
+result.hits.each { hit ->
+    def path=hit.node.path
+    Resource res = resourceResolver.getResource(path)
+    if(res!=null){
+        path = path.substring(6,path.length())
+        getAllReferences(path);
+    }
+}
+ 
+def getAllReferences(assetpath) {
+    def queryManager = session.workspace.queryManager
+    def statement = "/jcr:root" + "/content/geometrixx//*" + "[@sling:resourceType='"+ assetpath+"']"
+    def query = queryManager.createQuery(statement, "xpath")
+    def result = query.execute()
+    def rows = result.getRows().size
+    if(rows==0){
+        println "Asset="+assetpath+"; Results="+rows
+        println "********Unused Component*******: "
+    }
+ 
+}
+Validate Dispatcher Security for your website
+............................................................................
+/*
+This script could be used to check the Dispatcher security by checking the the below paths as per
+Security Checklist https://helpx.adobe.com/experience-manager/dispatcher/using/dispatcher-configuration.html#TestingDispatcherSecurity
+Make sure to Change the protocol, domain and one valid page as per your website.
+None of the curl response should give a 200 status.
+@author Hashim Khan */
+ 
+/*Defines the protocol for th website */
+def protocol="https://"
+/*Defines the main domain URL for the website */
+def domain="www.intel.com"
+/*Defines a sample page in the application to check content grabbing.  */
+def valid_page="/content/www/us/en/homepage"
+ 
+/*Defines a list of security URLs which are used to verify Dispatcher Configurations.
+You can add more if you like. Current list is from https://helpx.adobe.com/experience-manager/dispatcher/using/dispatcher-configuration.html#TestingDispatcherSecurity  */
+def list = [
+    protocol+domain+"/admin",
+    protocol+domain+"/system/console",
+    protocol+domain+"/dav/crx.default",
+    protocol+domain+"/crx",
+    protocol+domain+"/bin/crxde/logs",
+    protocol+domain+"/jcr:system/jcr:versionStorage.json",
+    protocol+domain+"/_jcr_system/_jcr_versionStorage.json",
+    protocol+domain+"/libs/wcm/core/content/siteadmin.html",
+    protocol+domain+"/libs/collab/core/content/admin.html",
+    protocol+domain+"/libs/cq/ui/content/dumplibs.html",
+    protocol+domain+"/var/linkchecker.html",
+    protocol+domain+"/etc/linkchecker.html",
+    protocol+domain+"/home/users/a/admin/profile.json",
+    protocol+domain+"/home/users/a/admin/profile.xml",
+    protocol+domain+"/libs/cq/core/content/login.json",
+    protocol+domain+"/content/../libs/foundation/components/text/text.jsp",
+    protocol+domain+"/content/.{.}/libs/foundation/components/text/text.jsp",
+    protocol+domain+"/apps/sling/config/org.apache.felix.webconsole.internal.servlet.OsgiManager.config/jcr%3acontent/jcr%3adata",
+    protocol+domain+"/libs/foundation/components/primary/cq/workflow/components/participants/json.GET.servlet",
+    protocol+domain+"/content.pages.json",
+    protocol+domain+"/content.languages.json",
+    protocol+domain+"/content.blueprint.json",
+    protocol+domain+"/content.-1.json",
+    protocol+domain+"/content.10.json",
+    protocol+domain+"/content.infinity.json",
+    protocol+domain+"/content.tidy.json",
+    protocol+domain+"/content.tidy.-1.blubber.json",
+    protocol+domain+"/content/dam.tidy.-100.json",
+    protocol+domain+"/content/content/geometrixx.sitemap.txt",
+    protocol+domain+valid_page+".query.json?statement=//*",
+    protocol+domain+valid_page+".qu%65ry.js%6Fn?statement=//*",
+    protocol+domain+valid_page+".query.json?statement=//*[@transportPassword]/(@transportPassword%20|%20@transportUri%20|%20@transportUser)",
+    protocol+domain+valid_page+"/_jcr_content.json",
+    protocol+domain+valid_page+"/_jcr_content.feed",
+    protocol+domain+valid_page+"/jcr:content.feed",
+    protocol+domain+valid_page+"._jcr_content.feed",
+    protocol+domain+valid_page+".jcr:content.feed",
+    protocol+domain+valid_page+".docview.xml",
+    protocol+domain+valid_page+".docview.json",
+    protocol+domain+valid_page+".sysview.xml",
+    protocol+domain+"/etc.xml",
+    protocol+domain+"/content.feed.xml",
+    protocol+domain+"/content.rss.xml",
+    protocol+domain+"/content.feed.html",
+    protocol+domain+valid_page+".html?debug=layout"
+]
+ 
+list.each {
+    checkUrlGetStatus(it)
+ 
+}
+checkUserGeneratedPath(protocol,domain)
+checkDispatcherInvalidation(protocol,domain)
+ 
+/*Method to make a GET call for the above list. */
+def checkUrlGetStatus(String path) {
+    print path+" , "
+    def process ="curl -s -o /dev/null -w %{http_code} ${path} ".execute().text
+    printf("%2s", "STATUS:")
+    process.each { text->
+        print "${text}"
+    }
+    println ""
+}
+/*Method to make a POST call for the user generated path. */
+def checkUserGeneratedPath(String protocol,String domain) {
+    print "POST:"+protocol+domain+"/content/usergenerated/mytestnode  ,"
+    def process ="curl -X POST -s -o /dev/null -w %{http_code} -u anonymous:anonymous ${protocol}${domain}/content/usergenerated/mytestnode".execute().text
+    printf("%2s", "STATUS:")
+    process.each { text->
+        print "${text}"
+     }
+     println ""
+ 
+}
+/*Method to make a Dispatcher invalidation call.  */
+def checkDispatcherInvalidation(String protocol,String domain) {
+    print "Dispatcher Invalidation: "+protocol+domain+"/dispatcher/invalidate.cache  ,"
+    def process ="curl -s -o /dev/null -w %{http_code} -H \'CQ-Handle:/content\' -H \'CQ-Path:/content\' ${protocol}${domain}/dispatcher/invalidate.cache".execute().text
+    printf("%2s", "STATUS:")
+    process.each { text->
+        print "${text}"
+    }
+}
+ 
+/* Curl Command Syntax to Parse the XML output.
+def proc = "curl -u admin:admin http://localhost:4502/content/geometrixx/en.html".execute().text
+def crx = new XmlSlurper().parseText(proc);
+def packages = crx.response.data.packages
+def status = crx.response.status;
+println "status:"+status;
+packages.package.each { pack->
+    println "${pack.name}: ${pack.size}"
+}
+*/
+Validate & Read Sitemap XML paths to create Cache
+
+/*
+This script could be used to create Cache by reading Sitemap and making a GET call for all the paths present in it. 
+Make sure to Change the protocol and domain as per your website. 
+Note that none of the request should give a 404. 
+@author Hashim Khan */
+ 
+ 
+/*Defines the protocol for the website */
+def protocol="https://"
+/*Defines the main domain URL for the website */
+def domain="www.lifetime.life"
+ 
+readSitemapXML(protocol,domain)
+ 
+/*Method to make a GET call for the above list. */
+def checkUrlGetStatus(String path) {
+    print path+" , "
+    def process ="curl -s -o /dev/null -w %{http_code} ${path} ".execute().text
+    
+    printf("%2s", "STATUS:") 
+    process.each { text->
+        print "${text}"
+    }
+    println ""
+}
+ 
+ 
+/*Method to make a GET call at Sitemap and read the XML output recursively. */
+/* Curl Command Syntax to Parse the XML output. */
+def readSitemapXML( String protocol,String domain) {
+     
+    def proc = "curl -X GET ${protocol}${domain}/sitemap.xml".execute().text
+    def output = new XmlSlurper().parseText(proc);
+    def urls = output.url.loc
+    urls.each { path->
+       def url = "${path}"
+       checkUrlGetStatus(url)
+        
+    }
+} 
