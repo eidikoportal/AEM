@@ -8,4 +8,5 @@
         jcr:title="us"
         sling:resourceType="my-wknd-site/components/page"/>
     <en/>
+    <fr/>
 </jcr:root>
