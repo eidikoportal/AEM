@@ -71,7 +71,7 @@
             
     <frontend-maven-plugin.version>1.12.0</frontend-maven-plugin.version>
             
-    <core.wcm.components.version>2.19.0</core.wcm.components.version>
+    <core.wcm.components.version>2.20.0</core.wcm.components.version>
             
     <bnd.version>5.1.2</bnd.version>
             
@@ -80,6 +80,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
             
     <componentGroupName>My Weekend Site</componentGroupName>
+
+    <!--Jackson version-->
+    <jackson_version>2.17.0</jackson_version>
         
   </properties>
       
@@ -1510,7 +1513,56 @@ Bundle-DocURL:
         <scope>test</scope>
                     
       </dependency>
-              
+      <!-- solr 8.9 start-->
+      <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.zookeeper</artifactId>
+                <version>3.8.0_1</version>
+      </dependency>
+
+      <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.solr-solrj</artifactId>
+                <version>8.9.0_1</version>
+      </dependency>
+      <!-- solr 8.9 end-->
+      <!-- JACKSON start-->
+      <dependency>
+
+        <groupId>com.fasterxml.jackson.core</groupId>
+
+        <artifactId>jackson-annotations</artifactId>
+
+        <version>${jackson_version}</version>
+
+        <scope>provided</scope>
+
+      </dependency>
+
+      <dependency>
+
+        <groupId>com.fasterxml.jackson.core</groupId>
+
+        <artifactId>jackson-core</artifactId>
+
+        <version>${jackson_version}</version>
+
+        <scope>provided</scope>
+
+      </dependency>
+
+      <dependency>
+
+        <groupId>com.fasterxml.jackson.core</groupId>
+
+        <artifactId>jackson-databind</artifactId>
+
+        <version>${jackson_version}</version>
+
+        <scope>provided</scope>
+
+      </dependency>
+      <!-- JACKSON end-->   
     </dependencies>
         
   </dependencyManagement>

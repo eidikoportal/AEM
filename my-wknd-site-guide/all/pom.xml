@@ -123,6 +123,51 @@
                             <type>zip</type>
                             <target>/apps/my-wknd-site-vendor-packages/content/install</target>
                         </embedded>
+                        <!-- solr 8.9 start-->
+                        <embedded>
+                            <groupId>org.apache.servicemix.bundles</groupId>
+                            <artifactId>org.apache.servicemix.bundles.zookeeper</artifactId>
+                            <filter>true</filter>
+                            <target>/apps/my-wknd-site-packages/application/install</target>
+                        </embedded>
+
+                        <embedded>
+                            <groupId>org.apache.servicemix.bundles</groupId>
+                            <artifactId>org.apache.servicemix.bundles.solr-solrj</artifactId>
+                            <filter>true</filter>
+                            <target>/apps/my-wknd-site-packages/application/install</target>
+                        </embedded>
+                        <!-- solr 8.9 end-->
+                        <!-- JACKSON start-->
+                        <embedded>
+                            <groupId>com.fasterxml.jackson.core</groupId>
+                            <artifactId>jackson-annotations</artifactId>
+                            <filter>true</filter>
+                            <target>/apps/my-wknd-site-packages/application/install</target>
+                        </embedded>
+
+                        <embedded>
+                            <groupId>com.fasterxml.jackson.core</groupId>
+                            <artifactId>jackson-core</artifactId>
+                            <filter>true</filter>
+                            <target>/apps/my-wknd-site-packages/application/install</target>
+                        </embedded>
+
+                        <embedded>
+                            <groupId>com.fasterxml.jackson.core</groupId>
+                            <artifactId>jackson-databind</artifactId>
+                            <filter>true</filter>
+                            <target>/apps/my-wknd-site-packages/application/install</target>
+                        </embedded>
+                        <!-- JACKSON end-->  
+                        <!-- Groovy console start-->
+                        <embedded>
+                            <groupId>org.cid15.aem.groovy.console</groupId>
+                            <artifactId>aem-groovy-console-all</artifactId>
+                            <type>zip</type>
+                            <target>/apps/my-wknd-site-packages/groovyconsole/install</target>
+                        </embedded>
+                        <!-- Groovy console end-->
                     </embeddeds>
                 </configuration>
             </plugin>
@@ -265,5 +310,39 @@
             <artifactId>core.wcm.components.examples.ui.content</artifactId>
             <type>zip</type>
         </dependency>
+        <!-- solr 8.9 start-->
+      <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.zookeeper</artifactId>
+     </dependency>
+      <dependency>
+                <groupId>org.apache.servicemix.bundles</groupId>
+                <artifactId>org.apache.servicemix.bundles.solr-solrj</artifactId>
+     </dependency>
+      <!-- solr 8.9 end--> 
+      <!-- JACKSON start-->
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+      </dependency>
+      <!-- JACKSON end-->
+      <!--Groovy console start-->
+      <dependency>
+            <groupId>org.cid15.aem.groovy.console</groupId>
+            <artifactId>aem-groovy-console-all</artifactId>
+            <version>17.0.0</version>
+            <type>zip</type>
+      </dependency>
+      <!-- Groovy console end-->
     </dependencies>
 </project>
