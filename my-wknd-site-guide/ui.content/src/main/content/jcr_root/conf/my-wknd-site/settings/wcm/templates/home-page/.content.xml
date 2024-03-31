@@ -2,9 +2,9 @@
 <jcr:root xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
     jcr:primaryType="cq:Template">
     <jcr:content
-        cq:lastModified="{Date}2023-02-05T22:49:26.966+05:30"
+        cq:lastModified="{Date}2024-03-24T21:32:33.846+05:30"
         cq:lastModifiedBy="admin"
-        cq:lastReplicated="{Date}2023-02-05T22:49:45.608+05:30"
+        cq:lastReplicated="{Date}2024-03-24T21:32:38.873+05:30"
         cq:lastReplicatedBy="admin"
         cq:lastReplicationAction="Activate"
         cq:templateType="/conf/my-wknd-site/settings/wcm/template-types/page"
