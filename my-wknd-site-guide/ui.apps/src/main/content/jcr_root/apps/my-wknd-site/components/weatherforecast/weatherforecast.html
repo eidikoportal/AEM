@@ -1,8 +1,9 @@
 <h1>Open Weather </h1>
 <div id="but" data-sly-resource="${'button' @ resourceType='my-wknd-site/components/button'}"></div>
 
+<sly data-sly-use.clientLib="/libs/granite/sightly/templates/clientlib.html" data-sly-call="${clientLib.js @ categories='my.wknd.custom.common'}" data-sly-unwrap/>
+<!--/*
 <sly data-sly-use.clientLib="/libs/granite/sightly/templates/clientlib.html" data-sly-call="${clientLib.js @ categories='cq.jquery'}" data-sly-unwrap/>
-
 <script>
 
     $(document).ready(function() {
@@ -37,4 +38,4 @@
 
 });
 
-</script>
+</script>*/-->
