@@ -109,3 +109,7 @@ http://localhost:4502/system/console/crypto
 AEM SPA GIT Smaple
 .........................
 https://github.com/anandkilli/aem-spa-react
+
+Groovy console
+..................................
+http://localhost:4502/apps/groovyconsole.html

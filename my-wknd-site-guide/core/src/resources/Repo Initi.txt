@@ -1,0 +1,19 @@
+create service user wkndServiceUser with path /home/users/system/wknd/wknd-service-user
+
+set ACL for wkndServiceUser
+allow jcr:read,rep:write on /content/my-wknd-site
+allow jcr:read on /apps
+allow jcr:read on /conf/my-wknd-site
+end
+
+create group aem-wknd-users with path /home/groups/aem-wknd-users
+set ACL for aem-wknd-users
+allow jcr:read,rep:write on /content/my-wknd-site
+allow jcr:read,rep:write on /apps/my-wknd-site
+allow jcr:read,rep:write on /conf/my-wknd-site
+allow jcr:read,rep:write on /home
+allow jcr:read on /
+end
+
+create user wknd-admin with path /home/users/wknd/aem-wknd-admin with password wknd-admin
+add wknd-admin to group aem-wknd-users
